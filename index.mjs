@@ -19,9 +19,15 @@ const stdlib = loadStdlib(process.env);
   const OUTCOME = ['Bob Wins', 'Draw', 'Alice wins'];
   const Player = (Who) => ({
     ...stdlib.hasRandom,
-    getHand: () => {
+    getHand: async () => {
       const hand = Math.floor(Math.random() * 3);
       console.log(`${Who} played ${HAND[hand]}`);
+      if( Math.random() <= 0.01 ) {
+        for(let i = 0; i < 10; i++) {
+          console.log(`   ${Who} takes his sweet time sending it back...`);
+          await stdlib.wait(1);
+        }
+      }
       return hand;
     },
     seeOutcome: (outcome) => {
@@ -40,15 +46,8 @@ const stdlib = loadStdlib(process.env);
     }),
     backend.Bob(ctcBob, {
       ...Player('Bob'),
-      acceptWager: async (amt) => {
-        if( Math.random() <= 0.5 ) {
-          for(let i = 0; i < 10; i++) {
-            console.log(`   Bob takes his sweet time...`);
-            await stdlib.wait(1);
-          }
-        } else {
-          console.log(`Bob accepts the wager of ${fmt(amt)}.`);
-        }
+      acceptWager:  (amt) => {
+        console.log(`Bob accepts the wager of ${fmt(amt)}.`);
       },
     }),
   ]);
